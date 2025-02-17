@@ -1,27 +1,52 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Task.API.Extensions;
-using Task.API.Middlewares;
+﻿
+using Microsoft.EntityFrameworkCore;
+ using Task.Repository.Data;
+using YourNamespace.Middlewares;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 
-var builder = WebApplication.CreateBuilder(args);
 
-// قراءة سلسلة الاتصال من الإعدادات
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+namespace Task.API
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-// تسجيل الخدمات باستخدام الإعدادات المخصصة
-builder.Services.ConfigureServices(connectionString);
+            // Add services to the container.
 
-var app = builder.Build();
+            builder.Services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
-// تسجيل Middleware لمعالجة الأخطاء
-app.UseMiddleware<ErrorHandlingMiddleware>();
+            builder.Services.AddDbContext<TaskContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
+            var app = builder.Build();
 
-app.MapControllers();
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
-app.Run();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthorization();
+
+
+            app.MapControllers();
+
+            app.Run();
+        }
+    }
+}

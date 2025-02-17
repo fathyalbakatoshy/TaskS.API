@@ -3,8 +3,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
-namespace Task.API.Middlewares
+
+namespace YourNamespace.Middlewares
 {
     public class ErrorHandlingMiddleware
     {
@@ -17,7 +22,7 @@ namespace Task.API.Middlewares
             _logger = logger;
         }
 
-        public async ValueTask Invoke(HttpContext context)
+        public async ValueTask InvokeAsync(HttpContext context)
         {
             try
             {
@@ -26,6 +31,7 @@ namespace Task.API.Middlewares
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception has occurred");
+
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
 
@@ -35,3 +41,6 @@ namespace Task.API.Middlewares
         }
     }
 }
+
+
+
