@@ -24,5 +24,7 @@ namespace Task.Repository.Data
         }
 
         public DbSet<Product> Product { get; set; }
+
+
     }
 }

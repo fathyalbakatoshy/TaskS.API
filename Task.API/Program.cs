@@ -1,42 +1,27 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Task.API.Extensions;
+using Task.API.Middlewares;
 
-using Microsoft.EntityFrameworkCore;
-using Task.Repository.Data;
+var builder = WebApplication.CreateBuilder(args);
 
-namespace Task.API
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+// قراءة سلسلة الاتصال من الإعدادات
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            // Add services to the container.
+// تسجيل الخدمات باستخدام الإعدادات المخصصة
+builder.Services.ConfigureServices(connectionString);
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+var app = builder.Build();
 
-            builder.Services.AddDbContext<TaskContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// تسجيل Middleware لمعالجة الأخطاء
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
-            var app = builder.Build();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+app.MapControllers();
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
-}
+app.Run();
