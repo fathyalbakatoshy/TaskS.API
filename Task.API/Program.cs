@@ -1,38 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Task.Repository.Data;
-using TaskAPI.Middleware;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Task.API.Extensions;
+//using Task.API.Middlewares;
 
-namespace TaskAPI
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.AddDbContext<TaskContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.ConfigureServices(connectionString);
 
-            var app = builder.Build();
+var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.UseMiddleware<ExceptionMiddleware>();
-            }
+//app.UseMiddleware<ErrorHandlingMiddleware>();
 
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
-            app.UseHttpsRedirection();
-            app.UseAuthorization();
-            app.MapControllers();
-            app.Run();
-        }
-    }
-}
+app.MapControllers();
+
+app.Run();
