@@ -1,15 +1,8 @@
-﻿
-using Microsoft.EntityFrameworkCore;
- using Task.Repository.Data;
-using YourNamespace.Middlewares;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Task.Repository.Data;
+using TaskAPI.Middleware;
 
-
-namespace Task.API
+namespace TaskAPI
 {
     public class Program
     {
@@ -18,9 +11,7 @@ namespace Task.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -34,18 +25,13 @@ namespace Task.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseMiddleware<ExceptionMiddleware>();
             }
-
-            app.UseMiddleware<ErrorHandlingMiddleware>();
 
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
         }
     }
