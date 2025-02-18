@@ -1,37 +1,34 @@
-﻿//using Microsoft.AspNetCore.Http;
-//using Microsoft.Extensions.Logging;
-//using System;
-//using System.Text.Json;
-//using System.Threading.Tasks;
-
-//namespace Task.API.Middlewares
+﻿
+//namespace WebApplication1
 //{
-//    public class ErrorHandlingMiddleware
+//    public class Program
 //    {
-//        private readonly RequestDelegate _next;
-//        private readonly ILogger<ErrorHandlingMiddleware> _logger;
-
-//        public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
+//        public static void Main(string[] args)
 //        {
-//            _next = next;
-//            _logger = logger;
-//        }
+//            var builder = WebApplication.CreateBuilder(args);
 
-//        public async Task Invoke(HttpContext context)
-//        {
-//            try
-//            {
-//                await _next(context);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "An unhandled exception has occurred");
-//                context.Response.StatusCode = 500;
-//                context.Response.ContentType = "application/json";
 
-//                var result = JsonSerializer.Serialize(new { error = ex.Message });
-//                await context.Response.WriteAsync(result);
+//            builder.Services.AddControllers();
+//            builder.Services.AddEndpointsApiExplorer();
+//            builder.Services.AddSwaggerGen();
+
+//            var app = builder.Build();
+
+//            // Configure the HTTP request pipeline.
+//            if (app.Environment.IsDevelopment())
+//            {
+//                app.UseSwagger();
+//                app.UseSwaggerUI();
 //            }
+
+//            app.UseHttpsRedirection();
+
+//            app.UseAuthorization();
+
+
+//            app.MapControllers();
+
+//            app.Run();
 //        }
 //    }
 //}

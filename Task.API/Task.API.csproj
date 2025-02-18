@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Task.Core\Task.Core.csproj" />
     <ProjectReference Include="..\Task.Repository\Task.Repository.csproj" />
   </ItemGroup>
 
